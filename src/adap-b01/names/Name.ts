@@ -15,6 +15,7 @@ export class Name {
     }
 
     // @methodtype conversion-method
+    /** Returns human-readable representation of Name instance */
     public asNameString(delimiter: string = this.delimiter): string {
         let nameString: string = "";
         this.components.forEach((c, i) => {
