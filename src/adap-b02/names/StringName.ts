@@ -12,7 +12,7 @@ export class StringName implements Name {
             this.delimiter = delimiter;
         }
         this.name = other;
-        this.setLength();
+        this.length = this.getNoComponents();
     }
 
     public asString(delimiter: string = this.delimiter): string {
@@ -50,7 +50,7 @@ export class StringName implements Name {
         let stringArrayName = this.asStringArrayName();
         stringArrayName[n] = c;
         this.name = this.asStringName(stringArrayName);
-        this.setLength();
+        // length stays the same
     }
 
     public insert(n: number, c: string): void {
@@ -58,12 +58,12 @@ export class StringName implements Name {
         let components = this.asStringArrayName();
         components.splice(n, 0, c);
         this.name = this.asStringName(components);
-        this.setLength();
+        this.length += 1;
     }
 
     public append(c: string): void {
         this.name += this.getDelimiterCharacter() + c;
-        this.setLength();
+        this.length += 1;
     }
 
     public remove(n: number): void {
@@ -71,12 +71,12 @@ export class StringName implements Name {
         let components = this.asStringArrayName();
         components.splice(n, 1);
         this.name = this.asStringName(components);
-        this.setLength();
+        this.length -= 1;
     }
 
     public concat(other: Name): void {
         this.name += this.getDelimiterCharacter() + other.asString(this.getDelimiterCharacter());
-        this.setLength();
+        this.length += other.getNoComponents();
     }
 
 
@@ -94,10 +94,6 @@ export class StringName implements Name {
         if (n < 0 || n >= this.getNoComponents()) {
             throw new Error("Index out of bounds");
         }
-    }
-
-    private setLength(): void{
-        this.length = this.name.length;
     }
 
 }
