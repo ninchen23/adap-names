@@ -1,43 +1,96 @@
 import { Name, DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "./Name";
+import { createHash } from 'crypto';
 
 export abstract class AbstractName implements Name {
 
     protected delimiter: string = DEFAULT_DELIMITER;
 
     constructor(delimiter: string = DEFAULT_DELIMITER) {
-        throw new Error("needs implementation");
+        if (delimiter !== undefined) {
+            this.delimiter = delimiter;
+        }
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation");
+        let comps: string[] = [];
+        
+        for(let i = 0; i < this.getNoComponents(); i++) {
+            comps.push(this.getComponent(i).replaceAll(`${ESCAPE_CHARACTER}${this.getDelimiterCharacter()}`, this.getDelimiterCharacter()));
+        }
+
+        return comps.join(delimiter);
     }
 
+    /*
+    unsure what this function should do
+    https://www.studon.fau.de/studon/ilias.php?ref_id=4447999&cmdClass=ilobjforumgui&thr_pk=386954&page=0&cmd=viewThread&cmdNode=13z:tp&baseClass=ilRepositoryGUI
+    */
     public toString(): string {
-        throw new Error("needs implementation");
+        return this.asDataString();
     }
 
+    /*
+    unsure which delimiter to use
+    */
     public asDataString(): string {
-        throw new Error("needs implementation");
+        let comps: string[] = [];
+    
+        for(let i = 0; i < this.getNoComponents(); i++) {
+            comps.push(this.getComponent(i));
+        }
+
+        return comps.join(this.delimiter);
     }
 
+    /*
+    unsure which implementation is meant here (definition of equality unclear)
+    */
     public isEqual(other: Name): boolean {
-        throw new Error("needs implementation");
+        // const selfString = this.asString();
+        // const otherString  = other.asString();
+        // return selfString === otherString
+
+
+        if (other.getDelimiterCharacter() !== this.getDelimiterCharacter() || other.getNoComponents() !== this.getNoComponents()) {
+            return false
+        }
+
+        const numberOfComponents = this.getNoComponents();
+
+        for (let i = 0; i < numberOfComponents; i++) {
+            if (this.getComponent(i) !== other.getComponent(i)) {
+                return false
+            }
+        }
+        return true
+
+
+        // return this.getHashCode() === other.getHashCode();
     }
 
     public getHashCode(): number {
-        throw new Error("needs implementation");
+        const hash = createHash('sha256').update(this.asDataString()).digest('hex');
+
+        const bigIntHash = BigInt(`0x${hash}`);
+
+        //console.log(bigIntHash);
+
+        // convert to number
+        const numberHash = Number(bigIntHash % BigInt(Number.MAX_SAFE_INTEGER));
+        return numberHash
     }
 
     public clone(): Name {
-        throw new Error("needs implementation");
+        const clone = Object.create(Object.getPrototypeOf(this));
+        return Object.assign(clone, this);
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation");
+        return this.getNoComponents() === 0;
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation");
+        return this.delimiter
     }
 
     abstract getNoComponents(): number;
@@ -50,7 +103,9 @@ export abstract class AbstractName implements Name {
     abstract remove(i: number): void;
 
     public concat(other: Name): void {
-        throw new Error("needs implementation");
+        for (let i = 0; i < other.getNoComponents(); i++) {
+            this.append(other.getComponent(i));
+        }
     }
 
 }
