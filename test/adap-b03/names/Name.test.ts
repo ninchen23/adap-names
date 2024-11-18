@@ -87,8 +87,13 @@ describe("string", () => {
     expect(n.asString("-")).toBe("oss-cs.fau-de");
     expect(n2.asString("-")).toBe("oss-cs.fau-de");
 
-    expect(n.asDataString()).toBe("oss.cs\\.fau.de");
-    expect(n2.asDataString()).toBe("oss.cs\\.fau.de");
+    console.log(n.asDataString());
+    console.log(n2.asDataString());
+    expect(n.asDataString()).toBe("{\"dataString\":\"oss.cs\\\\.fau.de\",\"delimiter\":\".\"}");
+    expect(n2.asDataString()).toBe("{\"dataString\":\"oss.cs\\\\.fau.de\",\"delimiter\":\".\"}");
+
+    let n3: StringArrayName = new StringArrayName(["fau"]);
+    expect(n3.asDataString()).toBe("{\"dataString\":\"fau\",\"delimiter\":\".\"}");
   })
 })
 
@@ -111,5 +116,21 @@ describe("equality", () => {
     expect(n.isEqual(n2)).toBe(false);
     expect(n2.isEqual(n)).toBe(false);
     expect(n.getHashCode()).not.toBe(n2.getHashCode());
+  })
+})
+
+describe("length", () => {
+  it("test length", () => {
+    let n: StringName = new StringName("oss.cs.fau.de");
+    let n2: StringArrayName = new StringArrayName(["oss", "cs", "fau", "de"]);
+
+    // expect(n.getLength()).toBe(4);
+    expect(n.getNoComponents()).toBe(4);
+    expect(n2.getNoComponents()).toBe(4);
+
+    n.append("blub");
+
+    expect(n.getNoComponents()).toBe(5);
+    expect(n2.getNoComponents()).toBe(4);
   })
 })

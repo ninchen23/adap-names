@@ -8,6 +8,8 @@ export abstract class AbstractName implements Name {
     constructor(delimiter: string = DEFAULT_DELIMITER) {
         if (delimiter !== undefined) {
             this.delimiter = delimiter;
+        } else {
+            this.delimiter = DEFAULT_DELIMITER;
         }
     }
 
@@ -39,7 +41,14 @@ export abstract class AbstractName implements Name {
             comps.push(this.getComponent(i));
         }
 
-        return comps.join(this.delimiter);
+        let name = comps.join(this.delimiter);
+        let delimiter = this.getDelimiterCharacter();
+
+        // make dictionary of name and delimiter
+        let dict = {'dataString': name, 'delimiter': delimiter};
+
+        // return string of dict
+        return JSON.stringify(dict);
     }
 
     /*
@@ -75,7 +84,7 @@ export abstract class AbstractName implements Name {
 
         //console.log(bigIntHash);
 
-        // convert to number
+        // convert hex string to number
         const numberHash = Number(bigIntHash % BigInt(Number.MAX_SAFE_INTEGER));
         return numberHash
     }
