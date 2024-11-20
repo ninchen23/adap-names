@@ -5,7 +5,7 @@ import { AbstractName } from "./AbstractName";
 export class StringName extends AbstractName {
 
     protected name: string = "";
-    protected noComponents: number = 0;
+    protected length: number = 0;
 
     constructor(other: string, delimiter?: string) {
         super(delimiter);
@@ -13,53 +13,17 @@ export class StringName extends AbstractName {
         this.length = this.getNoComponents();
     }
 
-    public clone(): Name {
-        throw new Error("needs implementation");
+    getNoComponents(): number {
+        return this.asStringArrayName().length;
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation");
-    }
-
-    public toString(): string {
-        throw new Error("needs implementation");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation");
-    }
-
-    public getNoComponents(): number {
-        throw new Error("needs implementation");
-    }
-
-    public getComponent(i: number): string {
-        throw new Error("needs implementation");
-    }
-
-    public setComponent(i: number, c: string) {
+    getComponent(i: number): string {
         this.checkIndex(i);
         let stringArrayName = this.asStringArrayName();
         return stringArrayName[i];
     }
 
-    public insert(i: number, c: string) {
+    setComponent(i: number, c: string) {
         this.checkIndex(i);
         let stringArrayName = this.asStringArrayName();
         stringArrayName[i] = c;
@@ -67,7 +31,7 @@ export class StringName extends AbstractName {
         // length stays the same
     }
 
-    public append(c: string) {
+    insert(i: number, c: string) {
         this.checkIndex(i);
         let components = this.asStringArrayName();
         components.splice(i, 0, c);
@@ -75,12 +39,12 @@ export class StringName extends AbstractName {
         this.length += 1;
     }
 
-    public remove(i: number) {
+    append(c: string) {
         this.name += this.getDelimiterCharacter() + c;
         this.length += 1;
     }
 
-    public concat(other: Name): void {
+    remove(i: number) {
         this.checkIndex(i);
         let components = this.asStringArrayName();
         components.splice(i, 1);

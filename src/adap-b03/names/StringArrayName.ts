@@ -19,6 +19,7 @@ export class StringArrayName extends AbstractName {
         this.checkIndex(i);
         return this.components[i];
     }
+
     setComponent(i: number, c: string) {
         this.checkIndex(i);
         this.components[i] = c;
@@ -28,14 +29,16 @@ export class StringArrayName extends AbstractName {
         this.checkIndex(i);
         this.components.splice(i, 0, c);
     }
+
     append(c: string) {
         this.components.push(c);
     }
+
     remove(i: number) {
         this.checkIndex(i);
         this.components.splice(i, 1);
     }
-
+    
     private checkIndex(i: number): void {
         if (i < 0 || i >= this.getNoComponents()) {
             throw new Error("Index out of bounds");
