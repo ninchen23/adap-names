@@ -1,4 +1,5 @@
-import { Name, DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "./Name";
+import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
+import { Name } from "./Name";
 import { createHash } from 'crypto';
 
 export abstract class AbstractName implements Name {
@@ -11,6 +12,11 @@ export abstract class AbstractName implements Name {
         } else {
             this.delimiter = DEFAULT_DELIMITER;
         }
+    }
+    
+    public clone(): Name {
+        const clone = Object.create(Object.getPrototypeOf(this));
+        return Object.assign(clone, this);
     }
 
     public asString(delimiter: string = this.delimiter): string {
@@ -87,11 +93,6 @@ export abstract class AbstractName implements Name {
         // convert hex string to number
         const numberHash = Number(bigIntHash % BigInt(Number.MAX_SAFE_INTEGER));
         return numberHash
-    }
-
-    public clone(): Name {
-        const clone = Object.create(Object.getPrototypeOf(this));
-        return Object.assign(clone, this);
     }
 
     public isEmpty(): boolean {
