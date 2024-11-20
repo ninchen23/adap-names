@@ -1,3 +1,4 @@
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { Name } from "../names/Name";
 import { Directory } from "./Directory";
 
@@ -31,10 +32,12 @@ export class Node {
     }
 
     public rename(bn: string): void {
+        IllegalArgumentException.assertIsNotNullOrUndefined(bn);
         this.doSetBaseName(bn);
     }
 
     protected doSetBaseName(bn: string): void {
+        IllegalArgumentException.assertIsNotNullOrUndefined(bn);
         this.baseName = bn;
     }
 

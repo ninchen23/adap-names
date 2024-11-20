@@ -1,5 +1,7 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+
 
 enum FileState {
     OPEN,
@@ -16,10 +18,12 @@ export class File extends Node {
     }
 
     public open(): void {
+        IllegalArgumentException.assertCondition(this.state === FileState.CLOSED, "Cannot open a file that is already open or deleted");
         // do something
     }
 
     public close(): void {
+        IllegalArgumentException.assertCondition(this.state === FileState.OPEN, "Cannot close a file that is already closed or deleted");
         // do something
     }
 
