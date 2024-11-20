@@ -12,7 +12,7 @@ export class StringName implements Name {
             this.delimiter = delimiter;
         }
         this.name = other;
-        this.length = this.getNoComponents();
+        this.noComponents = this.getNoComponents();
     }
 
     public asString(delimiter: string = this.delimiter): string {
@@ -28,7 +28,7 @@ export class StringName implements Name {
     }
 
     public isEmpty(): boolean {
-        return this.length === 0;
+        return this.noComponents === 0;
     }
 
     public getDelimiterCharacter(): string {
@@ -50,7 +50,7 @@ export class StringName implements Name {
         let stringArrayName = this.asStringArrayName();
         stringArrayName[n] = c;
         this.name = this.asStringName(stringArrayName);
-        // length stays the same
+        // noComponents stays the same
     }
 
     public insert(n: number, c: string): void {
@@ -58,12 +58,12 @@ export class StringName implements Name {
         let components = this.asStringArrayName();
         components.splice(n, 0, c);
         this.name = this.asStringName(components);
-        this.length += 1;
+        this.noComponents += 1;
     }
 
     public append(c: string): void {
         this.name += this.getDelimiterCharacter() + c;
-        this.length += 1;
+        this.noComponents += 1;
     }
 
     public remove(n: number): void {
@@ -71,12 +71,12 @@ export class StringName implements Name {
         let components = this.asStringArrayName();
         components.splice(n, 1);
         this.name = this.asStringName(components);
-        this.length -= 1;
+        this.noComponents -= 1;
     }
 
     public concat(other: Name): void {
         this.name += this.getDelimiterCharacter() + other.asString(this.getDelimiterCharacter());
-        this.length += other.getNoComponents();
+        this.noComponents += other.getNoComponents();
     }
 
 
