@@ -20,7 +20,7 @@ export class Link extends Node {
     }
 
     public setTargetNode(target: Node): void {
-        IllegalArgumentException.assertIsNotNullOrUndefined(target);
+        this.assertCorrectSetTargetNode(target);
         this.targetNode = target;
     }
 
@@ -30,13 +30,24 @@ export class Link extends Node {
     }
 
     public rename(bn: string): void {
-        IllegalArgumentException.assertIsNotNullOrUndefined(bn);
+        super.assertCorrectRename(bn);
         const target = this.ensureTargetNode(this.targetNode);
         target.rename(bn);
     }
 
     protected ensureTargetNode(target: Node | null): Node {
+        this.assertCorrectEnsureTargetNode(target);
         const result: Node = this.targetNode as Node;
         return result;
+    }
+
+
+    // Methods for assertion
+    protected assertCorrectSetTargetNode(target: Node): void {
+        IllegalArgumentException.assertIsNotNullOrUndefined(target);
+    }
+
+    protected assertCorrectEnsureTargetNode(target: Node | null): void {
+        IllegalArgumentException.assertCondition(target !== undefined, "Link target node is undefined");
     }
 }

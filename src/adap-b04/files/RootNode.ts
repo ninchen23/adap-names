@@ -21,13 +21,23 @@ export class RootNode extends Directory {
     }
 
     public move(to: Directory): void {
-        IllegalArgumentException.assertCondition(false, "Cannot move root node");
+        this.assertCorrectMove(to);
         // null operation
     }
 
     protected doSetBaseName(bn: string): void {
-        IllegalArgumentException.assertCondition(false, "Cannot set base name of root node");
+        this.assertCorrectSetBaseName(bn);
         // null operation
+    }
+
+
+    // Methods for assertion
+    protected assertCorrectMove(to: Directory): void {
+        IllegalArgumentException.assertCondition(false, "Cannot move root node");
+    }
+
+    protected assertCorrectSetBaseName(bn: string): void {
+        IllegalArgumentException.assertCondition(false, "Cannot set base name of root node");
     }
 
 }
