@@ -11,12 +11,14 @@ export class StringName extends AbstractName {
     protected noComponents: number = 0;
 
     constructor(other: string, delimiter?: string) {
-        IllegalArgumentException.assertIsNotNullOrUndefined(other, "other in constructor of StringName cannot be null or undefined");
         super(delimiter);
+
+        this.assertParameterNotNullOrUndefined(other, "other in constructor of StringName cannot be null or undefined");
+
         this.name = other;
         this.noComponents = this.getNoComponents();
 
-        this.assertCorrectState(other, delimiter);
+        this.assertCorrectState(other);
     }
 
     protected assertStringNameInvariants() {
@@ -25,38 +27,6 @@ export class StringName extends AbstractName {
         InvalidStateException.assertNotNullOrUndefined(this.noComponents, "this.noComponents is null or undefined");
         this.assertValidNoComponents();
     }
-
-    // public clone(): Name {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public asString(delimiter: string = this.delimiter): string {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public toString(): string {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public asDataString(): string {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public isEqual(other: Name): boolean {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public getHashCode(): number {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public isEmpty(): boolean {
-    //     throw new Error("needs implementation");
-    // }
-
-    // public getDelimiterCharacter(): string {
-    //     throw new Error("needs implementation");
-    // }
 
     public getNoComponents(): number {
         return this.asStringArrayName().length;
@@ -74,8 +44,7 @@ export class StringName extends AbstractName {
     }
 
     public setComponent(i: number, c: string) {
-        this.assertValidIndex(i);
-        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to set cannot be null or undefined");
+        this.assertCorrectParamsSetComponent(i, c);
         const original = this.name;
         const noComponents = this.noComponents;
 
@@ -84,13 +53,11 @@ export class StringName extends AbstractName {
         this.name = this.asStringName(stringArrayName);
         // noComponents stays the same
 
-        this.assertIsNullOrUndefined(this, original, this.noComponents);
         this.assertSetComponent(c, i, original, noComponents);
     }
 
     public insert(i: number, c: string) {
-        this.assertValidIndex(i);
-        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to insert cannot be null or undefined");
+        this.assertCorrectParamsInsert(i, c);
         const original = this.name;
         const noComponents = this.noComponents;
 
@@ -99,19 +66,17 @@ export class StringName extends AbstractName {
         this.name = this.asStringName(components);
         this.noComponents += 1;
 
-        this.assertIsNullOrUndefined(this, original, noComponents);
         this.assertInsertComponent(c, i, original, noComponents);
     }
 
     public append(c: string) {
-        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to append cannot be null or undefined");
+        this.assertCorrectParamsAppend(c);
         const original = this.name;
         const noComponents = this.noComponents;
 
         this.name += this.getDelimiterCharacter() + c;
         this.noComponents += 1;
 
-        this.assertIsNullOrUndefined(this, original, noComponents);
         this.assertAppendComponent(c, original, noComponents);
     }
 
@@ -125,27 +90,33 @@ export class StringName extends AbstractName {
         this.name = this.asStringName(components);
         this.noComponents -= 1;
 
-        MethodFailureException.assertNotNullOrUndefined(this, "this is null or undefined");
         this.assertRemovedComponent(i, original, orig_noComponents);
     }
 
-    public concat(other: Name): void {
-        const original = this.name;
-        super.concat(other);
 
-        this.noComponents += other.getNoComponents();
+    // methods for assertions for pre-conditions
+    protected assertCorrectParamsSetComponent(i: number, c: string) {
+        this.assertValidIndex(i);
+        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to set cannot be null or undefined");
+    }
 
-        // TODO
+    protected assertCorrectParamsInsert(i: number, c: string) {
+        this.assertValidIndex(i);
+        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to insert cannot be null or undefined");
+    }
+
+    protected assertCorrectParamsAppend(c: string) {
+        IllegalArgumentException.assertIsNotNullOrUndefined(c, "component to append cannot be null or undefined");
     }
 
 
     // methods for assertions for post-conditions
-    protected assertCorrectState(name: string, delimiter: string | undefined): void {
+    protected assertCorrectState(name: string): void {
         const cond = this.name === name;
         MethodFailureException.assertCondition(cond, "StringName not correctly consructed");
     }
 
-    private restore(original: string, noComponents: number) {
+    private restoreStringName(original: string, noComponents: number) {
         this.name = original;
         this.noComponents = noComponents;
     }
@@ -164,16 +135,9 @@ export class StringName extends AbstractName {
         MethodFailureException.assertCondition(cond, `component is not the same as the one with index ${index}`);
     }
 
-    protected assertIsNullOrUndefined(o: Object | null, original: string, noComponents: number): void {
-        if (o === null || o === undefined) {
-            this.restore(original, noComponents);
-            MethodFailureException.assertCondition(false, "null or undefined");
-        }
-    }
-
     protected assertSetComponent(c: string, index: number, original: string, noComponents: number): void {
         if (noComponents !== this.noComponents) {
-            this.restore(original, noComponents);
+            this.restoreStringName(original, noComponents);
             MethodFailureException.assertCondition(false, `component was not set correctly`);
         }
 
@@ -191,7 +155,7 @@ export class StringName extends AbstractName {
                 }
                 
                 if (cond === false) {
-                    this.restore(original, noComponents);
+                    this.restoreStringName(original, noComponents);
                     MethodFailureException.assertCondition(cond, `component was not set correctly`);
                 }
             }
@@ -200,7 +164,7 @@ export class StringName extends AbstractName {
 
     protected assertInsertComponent(c: string, index: number, original: string, noComponents: number): void {
         if (noComponents !== this.noComponents - 1) {
-            this.restore(original, noComponents);
+            this.restoreStringName(original, noComponents);
             MethodFailureException.assertCondition(false, `component was not inserted`);
         }
 
@@ -212,14 +176,14 @@ export class StringName extends AbstractName {
             if (i_orig === index) {
                 if(stringArrayName[i_new] !== c) {
                     cond = false;
-                    this.restore(original, noComponents);
+                    this.restoreStringName(original, noComponents);
                     MethodFailureException.assertCondition(cond, `component was not inserted`);
                 }
                 i_new++;
             }
             if(stringArrayName[i_new] !== origArrayName[i_orig]) {
                 cond = false;
-                this.restore(original, noComponents);
+                this.restoreStringName(original, noComponents);
                 MethodFailureException.assertCondition(cond, `component was not removed`);
             }
             i_new++;
@@ -228,7 +192,7 @@ export class StringName extends AbstractName {
 
     protected assertAppendComponent(c: string, original: string, noComponents: number): void {
         if (noComponents !== this.noComponents - 1) {
-            this.restore(original, noComponents);
+            this.restoreStringName(original, noComponents);
             MethodFailureException.assertCondition(false, `component was not appended`);
         }
 
@@ -238,20 +202,20 @@ export class StringName extends AbstractName {
         for (let i = 0; i < noComponents; i++) {
             if(stringArrayName[i] !== origArrayName[i]) {
                 cond = false;
-                this.restore(original, noComponents);
+                this.restoreStringName(original, noComponents);
                 MethodFailureException.assertCondition(cond, `component was not appended`);
             }
         }
         if (stringArrayName[noComponents] !== c) {
             cond = false;
-            this.restore(original, noComponents);
+            this.restoreStringName(original, noComponents);
             MethodFailureException.assertCondition(cond, `component was not appended`);
         }
     }
 
     protected assertRemovedComponent(index: number, original: string, noComponents: number): void {
         if (noComponents !== this.noComponents + 1) {
-            this.restore(original, noComponents);
+            this.restoreStringName(original, noComponents);
             MethodFailureException.assertCondition(false, `component was not removed`);
         }
 
@@ -265,19 +229,19 @@ export class StringName extends AbstractName {
             }
             if(stringArrayName[i_new] !== origArrayName[i_orig]) {
                 cond = false;
-                this.restore(original, noComponents);
+                this.restoreStringName(original, noComponents);
                 MethodFailureException.assertCondition(cond, `component was not removed`);
             }
             i_new++;
         }
     }
 
+    
     // methods for assertions for class invariants
     private assertValidNoComponents() {
         const cond = this.noComponents === this.getNoComponents();
         InvalidStateException.assertCondition(cond, "noComponents is not equal to the number of components in the name");
     }
-
 
 
     // helper methods
