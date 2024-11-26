@@ -41,6 +41,18 @@ export class Link extends Node {
         return result;
     }
 
+    public findNodes(bn: string): Set<Node> {
+        const result: Set<Node> = super.findNodes(bn);
+        const target: Node | null= this.getTargetNode();
+        if (target !== null) {
+            const childResult = target.findNodes(bn);
+            childResult.forEach((childResult: Node) => {
+                result.add(childResult);
+            });
+        }
+        return result;
+    }
+
 
     // Methods for assertion
     protected assertCorrectSetTargetNode(target: Node): void {

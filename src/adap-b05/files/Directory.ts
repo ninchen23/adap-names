@@ -20,6 +20,16 @@ export class Directory extends Node {
         this.childNodes.delete(cn); // Yikes! Should have been called remove
     }
 
+    public findNodes(bn: string): Set<Node> {
+        const result: Set<Node> = super.findNodes(bn);
+        this.childNodes.forEach((cn: Node) => {
+            const childResults = cn.findNodes(bn);
+            childResults.forEach((childResult: Node) => {
+                result.add(childResult);
+            });
+        });
+        return result;
+    }
 
     // Methods for assertion
     protected assertCorrectAdd(cn: Node): void {

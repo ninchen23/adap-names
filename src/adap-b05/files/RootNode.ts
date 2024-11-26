@@ -36,6 +36,7 @@ export class RootNode extends Directory {
         // null operation
     }
 
+
     // Methods for assertion
     protected assertCorrectMove(to: Directory): void {
         IllegalArgumentException.assertCondition(false, "Cannot move root node");
