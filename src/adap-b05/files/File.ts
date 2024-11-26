@@ -1,6 +1,8 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
 import { MethodFailedException } from "../common/MethodFailedException";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+
 
 enum FileState {
     OPEN,
@@ -17,6 +19,7 @@ export class File extends Node {
     }
 
     public open(): void {
+        this.assertOpen();
         // do something
     }
 
@@ -44,11 +47,22 @@ export class File extends Node {
     }
 
     public close(): void {
+        this.assertClosed();
         // do something
     }
 
     protected doGetFileState(): FileState {
         return this.state;
+    }
+
+
+    // Methods for assertion
+    protected assertOpen(): void {
+        IllegalArgumentException.assertCondition(this.state === FileState.CLOSED, "Cannot open a file that is already open or deleted");
+    }
+
+    protected assertClosed(): void {
+        IllegalArgumentException.assertCondition(this.state === FileState.OPEN, "Cannot close a file that is already closed or deleted");
     }
 
 }
