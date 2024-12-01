@@ -1,6 +1,9 @@
 import { ExceptionType, AssertionDispatcher } from "../common/AssertionDispatcher";
 import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { InvalidStateException } from "../common/InvalidStateException";
+import { ServiceFailureException } from "../common/ServiceFailureException";
+import { Exception } from "../common/Exception";
+
 
 import { Name } from "../names/Name";
 import { Directory } from "./Directory";
@@ -63,12 +66,23 @@ export class Node {
      * @param bn basename of node being searched for
      */
     public findNodes(bn: string): Set<Node> {
-        this.assertCorrectBaseName(bn);
-        const result: Set<Node> = new Set<Node>();
-        if (this.getBaseName() === bn) {
-            result.add(this);
+        try {
+            this.assertClassInvariants();
+
+            this.assertCorrectBaseName(bn);
+            const result: Set<Node> = new Set<Node>();
+            if (this.getBaseName() === bn) {
+                result.add(this);
+            }
+        
+            this.assertClassInvariants();
+
+            return result
+        } catch(er) {
+            ServiceFailureException.assertCondition(false, "service of findNodes failed", er as Exception);
+            AssertionDispatcher.dispatch(ExceptionType.CLASS_INVARIANT, false, "service of findNodes failed");
         }
-        return result
+        return new Set<Node>();
     }
 
     protected assertClassInvariants(): void {

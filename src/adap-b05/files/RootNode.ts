@@ -43,12 +43,18 @@ export class RootNode extends Directory {
     }
 
     protected assertCorrectSetBaseName(bn: string): void {
-        IllegalArgumentException.assertCondition(false, "Cannot set base name of root node");
+        if (bn != "") {
+            IllegalArgumentException.assertCondition(false, "Cannot set base name of root node");
+        }  
     }
 
     protected assertIsValidBaseName(bn: string, et: ExceptionType): void {
         const condition: boolean = (bn == ""); // Root must have "" as base name
         AssertionDispatcher.dispatch(et, condition, "invalid base name");
+    }
+
+    protected assertCorrectNodeConstructor(bn: string, pn: Directory): void {
+        IllegalArgumentException.assertIsNotNullOrUndefined(bn);
     }
 
 }
