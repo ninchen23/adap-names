@@ -55,10 +55,6 @@ export class File extends Node {
         return this.state;
     }
 
-    public findNodes(bn: string): Set<Node> {
-        return super.findNodes(bn);
-    }
-
 
     // Methods for assertion
     protected assertOpen(): void {

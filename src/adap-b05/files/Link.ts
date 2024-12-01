@@ -43,9 +43,9 @@ export class Link extends Node {
 
     public findNodes(bn: string): Set<Node> {
         const result: Set<Node> = super.findNodes(bn);
-        const target: Node | null= this.getTargetNode();
+        const target: Node | null = this.getTargetNode();
         if (target !== null) {
-            const childResult = target.findNodes(bn);
+            const childResult: Set<Node> = target.findNodes(bn);
             childResult.forEach((childResult: Node) => {
                 result.add(childResult);
             });

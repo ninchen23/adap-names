@@ -66,23 +66,21 @@ export class Node {
      * @param bn basename of node being searched for
      */
     public findNodes(bn: string): Set<Node> {
+        this.assertCorrectBaseName(bn);
+
+        const result: Set<Node> = new Set<Node>();
         try {
             this.assertClassInvariants();
 
-            this.assertCorrectBaseName(bn);
-            const result: Set<Node> = new Set<Node>();
             if (this.getBaseName() === bn) {
                 result.add(this);
             }
         
             this.assertClassInvariants();
-
-            return result
         } catch(er) {
             ServiceFailureException.assertCondition(false, "service of findNodes failed", er as Exception);
-            AssertionDispatcher.dispatch(ExceptionType.CLASS_INVARIANT, false, "service of findNodes failed");
         }
-        return new Set<Node>();
+        return result
     }
 
     protected assertClassInvariants(): void {

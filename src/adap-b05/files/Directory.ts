@@ -23,7 +23,7 @@ export class Directory extends Node {
     public findNodes(bn: string): Set<Node> {
         const result: Set<Node> = super.findNodes(bn);
         this.childNodes.forEach((cn: Node) => {
-            const childResults = cn.findNodes(bn);
+            const childResults: Set<Node> = cn.findNodes(bn);
             childResults.forEach((childResult: Node) => {
                 result.add(childResult);
             });
