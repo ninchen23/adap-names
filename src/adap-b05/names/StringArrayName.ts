@@ -9,14 +9,14 @@ export class StringArrayName extends AbstractName {
 
     protected components: string[] = [];
 
-    constructor(other: string[], delimiter?: string) {
+    constructor(source: string[], delimiter?: string) {
         super(delimiter);
 
-        this.assertCorrectParamComponents(other);
+        this.assertCorrectParamComponents(source);
 
-        this.components = [...other];
+        this.components = [...source];
 
-        this.assertCorrectState(other, delimiter);
+        this.assertCorrectState(source, delimiter);
     }
 
     protected assertStringArrayNameInvariants() {

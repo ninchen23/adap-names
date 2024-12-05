@@ -10,12 +10,16 @@ export class Directory extends Node {
         super(bn, pn);
     }
 
-    public add(cn: Node): void {
+    public hasChildNode(cn: Node): boolean {
+        return this.childNodes.has(cn);
+    }
+
+    public addChildNode(cn: Node): void {
         this.assertCorrectAdd(cn);
         this.childNodes.add(cn);
     }
 
-    public remove(cn: Node): void {
+    public removeChildNode(cn: Node): void {
         this.assertCorrectRemove(cn);
         this.childNodes.delete(cn); // Yikes! Should have been called remove
     }

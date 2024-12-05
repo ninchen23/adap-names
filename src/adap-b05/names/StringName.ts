@@ -10,15 +10,15 @@ export class StringName extends AbstractName {
     protected name: string = "";
     protected noComponents: number = 0;
 
-    constructor(other: string, delimiter?: string) {
+    constructor(source: string, delimiter?: string) {
         super(delimiter);
 
-        this.assertParameterNotNullOrUndefined(other, "other in constructor of StringName cannot be null or undefined");
+        this.assertParameterNotNullOrUndefined(source, "other in constructor of StringName cannot be null or undefined");
 
-        this.name = other;
+        this.name = source;
         this.noComponents = this.getNoComponents();
 
-        this.assertCorrectState(other);
+        this.assertCorrectState(source);
     }
 
     protected assertStringNameInvariants() {
