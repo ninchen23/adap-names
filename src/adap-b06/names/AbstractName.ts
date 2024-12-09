@@ -9,29 +9,35 @@ import { MethodFailedException } from "../common/MethodFailedException";
 export abstract class AbstractName implements Name {
 
     protected delimiter: string = DEFAULT_DELIMITER;
+    protected originalDelimiter: string = DEFAULT_DELIMITER;
 
     constructor(delimiter: string = DEFAULT_DELIMITER) {
         this.assertValidDelimiter(delimiter);
         if (delimiter !== undefined) {
             this.delimiter = delimiter;
+            this.originalDelimiter = delimiter;
         } else {
             this.delimiter = DEFAULT_DELIMITER;
+            this.originalDelimiter = DEFAULT_DELIMITER;
         }
 
         this.assertCorrectDelimiter(delimiter);
     }
 
-    // TODO
     protected assertAbstractNameInvariants() {
-        InvalidStateException.assertIsNotNullOrUndefined(this.delimiter, "this.delimiter is null or undefined");
+        this.assertIsNotUndefined(this.delimiter, "this.delimiter is undefined", false);
         this.assertValidDelimiter(this.delimiter);
+        InvalidStateException.assert(this.delimiter === this.originalDelimiter, "delimiter was changed");
     }
 
     public clone(): Name {
+        this.assertAbstractNameInvariants()
+
         const emptyClone = Object.create(Object.getPrototypeOf(this));
         const clone = Object.assign(emptyClone, this);
 
         this.assertCorrectClone(clone);
+        this.assertAbstractNameInvariants()
         return clone;
     }
 
@@ -69,7 +75,7 @@ export abstract class AbstractName implements Name {
     }
 
     public isEqual(other: Name): boolean {
-        this.assertParameterNotNullOrUndefined(other, "other in isEqual cannot be null or undefined");
+        this.assertParameterNotUndefined(other, "other in isEqual cannot be undefined");
 
         if (other.getDelimiterCharacter() !== this.getDelimiterCharacter() || other.getNoComponents() !== this.getNoComponents()) {
             return false
@@ -107,46 +113,39 @@ export abstract class AbstractName implements Name {
     abstract getNoComponents(): number;
 
     abstract getComponent(i: number): string;
-    abstract setComponent(i: number, c: string): void;
+    abstract setComponent(i: number, c: string): Name;
 
-    abstract insert(i: number, c: string): void;
-    abstract append(c: string): void;
-    abstract remove(i: number): void;
+    abstract insert(i: number, c: string): Name;
+    abstract append(c: string): Name;
+    abstract remove(i: number): Name;
 
-    // TODO
-    public concat(other: Name): void {
-        this.assertParameterNotNullOrUndefined(other, "other in concat cannot be null or undefined");
-        // save original in case of failure of the post-condition
-        let original = Object.create(Object.getPrototypeOf(this));
-        original.delimiter = this.getDelimiterCharacter();
-        for (let i = 0; i < this.getNoComponents(); i++) {
-            original.append(this.getComponent(i));
+    abstract concat(other: Name): Name;
+
+
+
+    protected assertIsNotUndefined(o: Object | undefined, msg: string = "object is undefined", isInvalidStateException: boolean = false): void {
+        if (o === undefined) {
+            if (!isInvalidStateException) {
+                throw new IllegalArgumentException("object is undefined");
+            } else {
+                throw new InvalidStateException("object is undefined");
+            }
         }
-
-        for (let i = 0; i < other.getNoComponents(); i++) {
-            this.append(other.getComponent(i));
-        }
-
-        this.assertConcatComponents(original, other);
     }
-
-
-
-    
     
     // methods for assertions (pre-conditions)
     protected assertValidDelimiter(delimiter: string): void {
-        IllegalArgumentException.assertIsNotNullOrUndefined(delimiter, "delimiter cannot be null or undefined");
+        this.assertIsNotUndefined(delimiter, "delimiter cannot be null or undefined");
         const cond = delimiter.length === 1 && delimiter !== ESCAPE_CHARACTER;
         IllegalArgumentException.assert(cond, "Delimiter must be a single character and not the escape character");
     }
 
-    protected assertParameterNotNullOrUndefined(o: Object | null, msg: string = "null or undefined"): void {
-        IllegalArgumentException.assertIsNotNullOrUndefined(o, msg);
+    protected assertParameterNotUndefined(o: Object | undefined, msg: string = "object undefined"): void {
+        this.assertIsNotUndefined(o, msg);
     }
 
     protected assertValidIndex(n: number): void {
-        IllegalArgumentException.assertIsNotNullOrUndefined(n);
+        this.assertIsNotUndefined(n);
         const cond = (n >= 0 && n < this.getNoComponents());
         IllegalArgumentException.assert(cond, "Index out of bounds");
     }
@@ -159,36 +158,38 @@ export abstract class AbstractName implements Name {
     }
 
     protected assertCorrectClone(clone: Name): void {
-        MethodFailedException.assertIsNotNullOrUndefined(clone, "clone is null or undefined");
+        if (clone === undefined) {
+            throw new MethodFailedException("clone is undefined");
+        }
         MethodFailedException.assert(this !== clone, "this is the same as clone");
         MethodFailedException.assert(this.isEqual(clone), "clone is not equal to this");
     }
 
-    protected restoreName(original: Name): void {
-        this.delimiter = original.getDelimiterCharacter();
-        for (let i = 0; i < original.getNoComponents(); i++) {
-            this.setComponent(i, original.getComponent(i));
-        }
-        if (this.getNoComponents() > original.getNoComponents()) {
-            for(let i = original.getNoComponents(); i < this.getNoComponents(); i++) {
-                this.remove(i);
-            }
-        }
-    }
+    // protected restoreName(original: Name): void {
+    //     this.delimiter = original.getDelimiterCharacter();
+    //     for (let i = 0; i < original.getNoComponents(); i++) {
+    //         this.setComponent(i, original.getComponent(i));
+    //     }
+    //     if (this.getNoComponents() > original.getNoComponents()) {
+    //         for(let i = original.getNoComponents(); i < this.getNoComponents(); i++) {
+    //             this.remove(i);
+    //         }
+    //     }
+    // }
 
     protected assertConcatComponents(original: Name, other: Name): void {
         const cond = this.getNoComponents() === original.getNoComponents() + other.getNoComponents();
-        this.restoreName(original);
+        //this.restoreName(original);
         MethodFailedException.assert(cond, "Components not concatenated");
 
         for (let i = 0; i < original.getNoComponents(); i++) {
             const cond = this.getComponent(i) === original.getComponent(i);
-            this.restoreName(original);
+            //this.restoreName(original);
             MethodFailedException.assert(cond, "Components not concatenated");
         }
         for (let i = 0; i < other.getNoComponents(); i++) {
             const cond = this.getComponent(i + original.getNoComponents()) === other.getComponent(i);
-            this.restoreName(original);
+            //this.restoreName(original);
             MethodFailedException.assert(cond, "Components not concatenated");
         }
     }
